@@ -938,32 +938,22 @@
   // ---- Footer year ----
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // ---- Events accordion: click to toggle, auto open/close as each group scrolls through view ----
+  // ---- Events accordion: all collapsed by default; opening one closes the others ----
   const ledgerGroups = document.querySelectorAll(".ledger-group");
   ledgerGroups.forEach(group => {
     const toggle = group.querySelector(".ledger-toggle");
     toggle.addEventListener("click", () => {
-      const isOpen = group.classList.toggle("open");
-      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      const wasOpen = group.classList.contains("open");
+      ledgerGroups.forEach(g => {
+        g.classList.remove("open");
+        g.querySelector(".ledger-toggle").setAttribute("aria-expanded", "false");
+      });
+      if (!wasOpen) {
+        group.classList.add("open");
+        toggle.setAttribute("aria-expanded", "true");
+      }
     });
   });
-
-  if ("IntersectionObserver" in window) {
-    const ledgerObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const group = entry.target;
-        const toggle = group.querySelector(".ledger-toggle");
-        if (entry.isIntersecting) {
-          group.classList.add("open");
-          toggle.setAttribute("aria-expanded", "true");
-        } else {
-          group.classList.remove("open");
-          toggle.setAttribute("aria-expanded", "false");
-        }
-      });
-    }, { threshold: 0.35, rootMargin: "-10% 0px -10% 0px" });
-    ledgerGroups.forEach(group => ledgerObserver.observe(group));
-  }
 </script>
 
 </body>
